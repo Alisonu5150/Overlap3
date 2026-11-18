@@ -1,0 +1,263 @@
+<!doctype html>
+<!--
+  Welcome! This file (index.html) is the STRUCTURE of the "Overlap" website.
+
+  HTML (HyperText Markup Language) describes WHAT is on a page: headings, buttons, text boxes, and so on.
+  It is written with "tags" in angle brackets, like <p> and </p>. An opening tag, the content, and the
+  closing tag together make an "element". Extra settings go inside the opening tag as "attributes",
+  for example class="card" or id="people".
+
+  A comment (like this note) is text for humans. The browser ignores it completely.
+
+  Three files work together to make the website:
+    index.html  = the structure (this file)
+    styles.css  = the look: colors, sizes, spacing
+    app.js      = the behavior: what happens when you click, drop files, and so on
+  To use the site, keep all three files in the same folder and open index.html in a web browser.
+
+  The very first line of this file (doctype html) tells the browser to use modern HTML rules.
+  The html tag below wraps the whole page. lang="en" says the page is in English, which helps
+  screen readers (software that reads pages aloud) and translation tools.
+-->
+<html lang="en">
+<!--
+  The head holds information ABOUT the page (settings, the title, links to other files).
+  Nothing inside the head is drawn on the page itself.
+-->
+<head>
+<!--
+  A meta tag gives the browser a setting. charset="utf-8" means "use the UTF-8 text encoding",
+  which lets the page show accents, arrows and symbols correctly.
+-->
+<meta charset="utf-8">
+<!--
+  A security rule called a Content Security Policy (CSP). It tells the browser exactly what this
+  page is allowed to do, so that even if something went wrong, a stranger's code could not run here.
+  In plain words:
+    default-src 'none'    = by default, nothing is allowed
+    script-src 'self'     = JavaScript may only come from our own file (app.js)
+    style-src ...         = styles may come from our own file, plus style attributes written in the page
+    img-src data:         = only tiny images embedded in the page itself
+    connect-src https:    = network requests may only go to secure (https) addresses
+    base-uri / form-action 'none' = the page may not change its base address or send forms elsewhere
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src data:; connect-src https:; base-uri 'none'; form-action 'none'">
+<!--
+  When you click through to another website, browsers normally tell that site which page you came
+  from (the "referrer"). This setting says never to do that, which is better for privacy.
+-->
+<meta name="referrer" content="no-referrer">
+<!--
+  Makes the page fit phone screens: use the device's real width instead of pretending to be a wide
+  desktop screen. Without this line, phones would show a tiny zoomed-out page.
+-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- The title is the text shown on the browser tab. -->
+<title>Overlap — find shared free time</title>
+<!--
+  Connects the CSS file. rel="stylesheet" says what kind of file it is, and href="styles.css"
+  says where to find it (in the same folder as this file).
+-->
+<link rel="stylesheet" href="styles.css">
+</head>
+<!-- The body holds everything you actually SEE on the page. -->
+<body>
+<!--
+  A div is a plain box used to group other things together. The class attribute gives the box a
+  label ("wrap") that styles.css uses to style it. This outer box centers the page and limits its width.
+-->
+<div class="wrap">
+  <!-- The header element is the top area of the page: the title and the tagline. -->
+  <header>
+    <div>
+      <!-- h1 is the main heading (the most important title on the page). The p tag below it is a paragraph. -->
+      <h1>Overlap</h1>
+      <p class="tag">Drop in everyone's calendar and see when you're all free.</p>
+    </div>
+    <!-- A small privacy note, shown with a lock icon at the right of the header. -->
+    <div class="privacy">
+      <!--
+        SVG (Scalable Vector Graphics) lets you draw pictures using code. This one draws a padlock out of
+        shapes: rect is a rectangle and path is a custom line. aria-hidden="true" tells screen readers to skip
+        it, because it is only decoration.
+      -->
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Calendars are read in your browser and never uploaded.
+    </div>
+  </header>
+
+  <!--
+    The page has two columns: controls on the left, results on the right. styles.css arranges them
+    side by side on wide screens and stacks them on phones.
+  -->
+  <div class="layout">
+    <!-- An aside is side content. Here it is the left column with the controls. -->
+    <aside>
+      <!--
+        A section is a group of related content; this one is the first card (a box) on the left.
+        "aria" attributes give extra hints to assistive technology such as screen readers.
+        aria-labelledby points at the id of the heading below, so the card's name can be announced.
+      -->
+      <section class="card" aria-labelledby="h-people">
+        <h2 id="h-people">People &amp; calendars</h2>
+        <!--
+          The drop zone: a dashed box where you can drag calendar files. A ".ics" file is the standard
+          calendar file format used by Google Calendar, Apple Calendar and Outlook. The dragging behavior lives
+          in app.js; this is only the box and its text.
+        -->
+        <div class="drop" id="drop">
+          <strong>Drop .ics files here</strong>
+          One file per person is the quickest way to start.
+          <!--
+            A row of three buttons. A button is something you click. type="button" means it does nothing by
+            itself; app.js attaches the actions later, finding each button by its id (a unique name).
+          -->
+          <div class="row">
+            <button class="btn primary" id="btnFiles" type="button">Choose files</button>
+            <button class="btn" id="btnLink" type="button">Add link</button>
+            <button class="btn" id="btnPaste" type="button">Paste</button>
+          </div>
+        </div>
+        <!--
+          Two hidden file pickers. An input of type "file" opens your computer's file chooser.
+          accept limits the choice to calendar files, multiple allows choosing several at once, and hidden keeps
+          them invisible. The visible buttons above open them from app.js.
+          The first picker creates NEW people; the second adds a file to a person who already exists.
+        -->
+        <input type="file" id="fileIn" accept=".ics,.ical,.ifb,text/calendar" multiple hidden>
+        <input type="file" id="fileInPerson" accept=".ics,.ical,.ifb,text/calendar" multiple hidden>
+        <!-- An empty list (ul = unordered list). app.js fills it with one entry per person once calendars are added. -->
+        <ul class="people" id="people"></ul>
+        <!--
+          Two small buttons: load sample calendars, and clear everything. The "hidden" class keeps Clear all
+          out of sight until there is something to clear. The style attribute holds a little CSS written directly
+          on the element (here, some extra space above).
+        -->
+        <div class="row" style="margin-top:12px">
+          <button class="btn small ghost" id="btnDemo" type="button">Try sample calendars</button>
+          <button class="btn small ghost hidden" id="btnClear" type="button">Clear all</button>
+        </div>
+        <!--
+          details makes a collapsible help section. The summary is the always-visible title; clicking it reveals
+          the rest. This is built into HTML, so no JavaScript is needed. li = list item, b = bold text.
+        -->
+        <details>
+          <summary>How do I get a calendar file?</summary>
+          <ul>
+            <li><b>Google Calendar:</b> Settings → Import &amp; export → Export. It downloads a zip; unzip it, one .ics per calendar.</li>
+            <li><b>Apple Calendar:</b> File → Export → Export…</li>
+            <li><b>Outlook:</b> File → Save Calendar (or Share → Publish, then use "Add link").</li>
+          </ul>
+          <p style="margin:6px 0 0">"Add link" works with subscription URLs (webcal:// or https://) from hosts that allow browser access. If a link is blocked, download the file instead.</p>
+        </details>
+      </section>
+
+      <!--
+        The second card: the settings that control WHEN to look for free time.
+        Each label wraps a description and a form control (an input or a select), so clicking the words
+        also focuses the control.
+      -->
+      <section class="card" aria-labelledby="h-set">
+        <h2 id="h-set">When to look</h2>
+        <!-- A container for the settings controls. styles.css lays them out in a two-column grid. -->
+        <div class="fields">
+          <!-- input type="date" gives a built-in date picker. Each control has an id so app.js can find it. -->
+          <label class="f">Start date<input type="date" id="sStart"></label>
+          <!--
+            A select is a dropdown menu and each option is one choice. "selected" means that choice starts
+            chosen. The value attribute is what the code reads; the words between the tags are what you see.
+          -->
+          <label class="f">Look ahead
+            <select id="sDays"><option value="7">1 week</option><option value="14" selected>2 weeks</option><option value="21">3 weeks</option><option value="28">4 weeks</option><option value="42">6 weeks</option></select>
+          </label>
+          <!--
+            The Earliest and Latest dropdowns are empty on purpose: app.js builds their options (every half hour)
+            when the page loads.
+          -->
+          <label class="f">Earliest<select id="sFrom"></select></label>
+          <label class="f">Latest<select id="sTo"></select></label>
+          <!--
+            The day-of-the-week buttons. The div below starts empty; app.js creates seven checkboxes inside it.
+            role="group" with aria-labelledby tells screen readers these buttons belong together under the label "Days".
+          -->
+          <div class="full">
+            <div class="f" style="font-size:13px;color:var(--muted);margin-bottom:4px" id="dowLabel">Days</div>
+            <div class="days" id="dows" role="group" aria-labelledby="dowLabel"></div>
+          </div>
+          <!--
+            More dropdowns: the minimum length of free time (options added by app.js) and the gap to leave around
+            events (fixed options written here).
+          -->
+          <label class="f">Needs at least<select id="sDur"></select></label>
+          <label class="f">Gap around events
+            <select id="sBuf"><option value="0">None</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">1 hour</option></select>
+          </label>
+          <!--
+            The "who must be free" choices depend on how many people are included, so app.js fills this in.
+            The time zone list is also filled in by app.js.
+          -->
+          <label class="f full">Who must be free<select id="sNeed"></select></label>
+          <label class="f full">Time zone<select id="sTz"></select></label>
+        </div>
+        <!-- Checkboxes are on/off options. "checked" means a box starts ticked. -->
+        <div class="opts">
+          <label><input type="checkbox" id="oAllDay"> Treat all-day events as busy</label>
+          <label><input type="checkbox" id="oSnap" checked> Start and end on the hour or half hour</label>
+          <label><input type="checkbox" id="oTitles"> Show event names when hovering</label>
+        </div>
+      </section>
+    </aside>
+
+    <!--
+      main is the main content area, on the right. It starts empty; app.js writes the results into it.
+      aria-live="polite" tells screen readers to announce changes here when it is convenient.
+    -->
+    <main id="results" aria-live="polite"></main>
+  </div>
+</div>
+
+<!--
+  A dialog is a pop-up window. app.js opens it when you click "Add link" or "Paste", and it stays
+  hidden the rest of the time.
+-->
+<dialog id="dlg">
+  <!--
+    A form groups input fields. method="dialog" lets the form close the pop-up. app.js also listens for
+    the form being submitted so it can process the calendar you entered.
+  -->
+  <form method="dialog" id="dlgForm">
+    <h3 id="dlgTitle">Add calendar</h3>
+    <label class="f">Whose calendar is this?
+      <select id="dlgPerson"></select>
+    </label>
+    <!--
+      Three kinds of input: a name, a calendar link, and pasted calendar text. app.js shows only the ones that
+      are needed (link or paste). placeholder is the faint hint text. The code &#10; stands for a line break.
+    -->
+    <label class="f" id="dlgNameWrap">Name<input class="box" type="text" id="dlgName" placeholder="e.g. Sam"></label>
+    <label class="f" id="dlgUrlWrap">Calendar link<input class="box" type="url" id="dlgUrl" placeholder="webcal://… or https://…/calendar.ics"></label>
+    <label class="f" id="dlgTextWrap">Calendar text<textarea id="dlgText" placeholder="BEGIN:VCALENDAR&#10;…"></textarea></label>
+    <!--
+      Two message areas that start empty: "note" for friendly information and "err" for errors.
+      role="status" and role="alert" make screen readers announce the messages when they appear.
+    -->
+    <div class="note" id="dlgNote" role="status"></div>
+    <div class="err" id="dlgErr" role="alert"></div>
+    <!-- The Cancel and Add buttons. type="submit" sends the form. -->
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" type="button" id="dlgCancel">Cancel</button>
+      <button class="btn primary" type="submit" id="dlgOk">Add</button>
+    </div>
+  </form>
+</dialog>
+<!-- A "toast" is a small message that pops up briefly at the bottom of the screen (for example "Copied"). -->
+<div id="toast" role="status"></div>
+
+<!--
+  This loads app.js, the JavaScript file that makes the page interactive. "defer" means: wait until the
+  whole page has been built before running it, so the code can find all the elements above.
+  It sits at the very end of the body for the same reason.
+-->
+<script src="app.js" defer></script>
+</body>
+</html>

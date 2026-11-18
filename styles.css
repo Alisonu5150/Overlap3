@@ -1,0 +1,232 @@
+/* styles.css: the LOOK of the website.
+
+   CSS (Cascading Style Sheets) tells the browser how HTML elements should look. A CSS "rule" has two parts:
+   a selector (WHICH elements?) and, inside curly braces, declarations (WHAT to change). Each declaration is
+   a property and a value, like color:red;. Selectors can be an element name (h1), a class (.card, which
+   matches class="card" in the HTML) or an id (#toast). "Cascading" means that when two rules disagree, the
+   more specific or the later one wins. A comment like this one is ignored by the browser.
+
+   THEME COLORS. :root means "the whole page". Names that start with two dashes (like --bg) are custom
+   properties, also called variables. They are defined once here and reused anywhere with var(--bg),
+   so changing a color in one place changes it everywhere. Colors are written as hex codes such as #f6f3ec
+   (amounts of red, green and blue). Rough meanings: bg = page background, panel = card background,
+   ink = main text, muted = softer text, line = borders, accent = the green highlight, busy = the color of
+   busy time in the grid, danger = error red. This first set is the light theme. */
+:root{
+  --bg:#f6f3ec; --panel:#fffdf8; --ink:#1d2320; --muted:#59625c; --line:#ddd7c8;
+  --accent:#1f6f55; --accent-ink:#ffffff; --accent-soft:#dcebe1; --busy:#e9e4d7; --warn:#8a4b12; --danger:#a3321f;
+  --radius:14px;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+/* DARK MODE. A "media query" (@media) applies its rules only when a condition is true. Here the
+   condition is that the device is set to dark mode. The same variables are redefined with dark colors,
+   so every part of the page switches automatically without any other changes. */
+@media (prefers-color-scheme:dark){
+  :root{--bg:#131916; --panel:#1b2420; --ink:#eef1ea; --muted:#a6b1a9; --line:#2f3b35; --accent:#5fc79e; --accent-ink:#0b1912; --accent-soft:#213a2e; --busy:#25302a; --warn:#e8ab6c; --danger:#f08a76;}
+}
+/* * matches every element. box-sizing:border-box makes an element's width include its padding and
+   border, which makes sizes much easier to reason about. */
+*{box-sizing:border-box}
+/* Stops phones from enlarging text on their own when the screen is turned sideways. */
+html{-webkit-text-size-adjust:100%}
+/* The body is the whole visible page: remove the default margin, set the background and text colors
+   from the variables, and set the font size (15px) and line height (1.5 times the text size). */
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
+/* Buttons and form fields normally ignore the page font. "inherit" makes them use the same font and
+   color as the text around them. */
+button,input,select,textarea{font:inherit;color:inherit}
+/* A pseudo-class (a state, written with a colon). :focus-visible matches the element you have selected
+   with the keyboard (Tab key). The outline makes it obvious where you are, which helps people who
+   do not use a mouse. */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* LAYOUT. .wrap is the outer container: a maximum width, centered horizontally (margin auto on the
+   sides), with some space (padding) around the edges. */
+.wrap{max-width:1360px;margin:0 auto;padding:0 16px 64px}
+/* The header uses "flexbox" (display:flex), a way of arranging items in a row. flex-wrap lets items drop
+   to the next line when space runs out, gap sets the space between items, and justify-content pushes the
+   title to one side and the privacy note to the other. */
+header{padding:28px 0 20px;display:flex;flex-wrap:wrap;gap:12px 32px;align-items:flex-end;justify-content:space-between}
+/* The main title: bold (600), 34px, with the serif font from the variables. */
+h1{font:600 34px/1.1 var(--serif);margin:0;letter-spacing:-.01em}
+/* The tagline under the title: softer color and limited to about 52 characters wide (ch) so it is easy to read. */
+.tag{margin:6px 0 0;color:var(--muted);max-width:52ch}
+/* The privacy note and its lock icon sit side by side, vertically centered. */
+.privacy{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.privacy svg{flex:none}
+/* The two-column page layout, made with CSS Grid (display:grid), a way of placing things in rows and
+   columns. The first column is between 300px and 380px wide (minmax); the second takes all remaining
+   space (1fr = one share of the free space). */
+.layout{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start}
+/* RESPONSIVE DESIGN. On screens narrower than 900px (tablets, phones), use a single column instead,
+   so the controls stack above the results. */
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+/* min-width:0 lets this column shrink instead of being forced wider by wide content like the grid. */
+main{min-width:0}
+/* CARDS. A card is a white box with a thin border, rounded corners and padding. */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+/* The + means "directly after". A card that follows another card gets space above it. */
+.card + .card{margin-top:16px}
+/* Small uppercase section headings (like PEOPLE & CALENDARS). */
+h2{font:600 13px/1.2 var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 12px}
+/* BUTTONS. The base style for every button: inline-flex lines up the content, a minimum height of 44px
+   is comfortable to tap on a phone, and the cursor becomes a pointing hand. */
+.btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:transparent;cursor:pointer;white-space:nowrap}
+/* :hover applies while the mouse is over the element: the border turns green. */
+.btn:hover{border-color:var(--accent)}
+/* Two classes with no space (.btn.primary) mean "an element that has BOTH classes". This is the filled
+   green button used for the main action. */
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+/* A smaller button. */
+.btn.small{min-height:36px;padding:0 10px;font-size:13px}
+/* A quiet button with no visible border. */
+.btn.ghost{border-color:transparent;color:var(--muted)}
+/* A small square button used for the X (remove) icons. */
+.icon-btn{width:36px;height:36px;min-height:0;padding:0;justify-content:center;flex:none}
+/* A generic row: items in a line that wrap onto the next line when needed. */
+.row{display:flex;flex-wrap:wrap;gap:8px}
+/* THE DROP ZONE. A dashed border, centered text, and a short transition (a smooth change over 0.15
+   seconds) when its color changes. */
+.drop{border:2px dashed var(--line);border-radius:12px;padding:20px 14px;text-align:center;color:var(--muted);transition:.15s}
+/* The bold line inside the drop zone is made a block so it sits on its own line. */
+.drop strong{display:block;color:var(--ink);font-size:16px;margin-bottom:2px}
+/* While you drag a file over the page, app.js adds the class "dragging" to the body. These rules then
+   highlight the drop zone in green so you know where to drop. */
+body.dragging .drop,.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.drop .row{justify-content:center;margin-top:12px}
+/* THE PEOPLE LIST. Remove the default bullets and spacing, and stack the entries in a one-column grid.
+   minmax(0,1fr) stops long names from stretching the column. */
+ul.people{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+/* min-width:0 on the next two rules lets these boxes shrink to fit instead of overflowing on narrow screens. */
+.person{min-width:0}
+aside{min-width:0}
+/* Each person is a bordered, rounded box. */
+.person{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+/* A person who is switched off is faded (opacity .55 = 55% visible). */
+.person.off{opacity:.55}
+/* The top row of a person's box: checkbox, colored dot, name, and remove button. */
+.p-head{display:flex;align-items:center;gap:8px}
+/* The name box looks like plain text until you hover or click it. input[type=text] is an "attribute
+   selector": it matches only text inputs. */
+.p-head input[type=text]{flex:1;min-width:0;border:1px solid transparent;background:transparent;border-radius:8px;padding:6px 8px;font-weight:600;min-height:36px}
+.p-head input[type=text]:hover{border-color:var(--line)}
+/* The small colored circle that shows each person's color. border-radius:50% turns a square into a circle,
+   and the box-shadow draws two thin rings around it. */
+.dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--line)}
+/* The include checkbox, tinted with the accent color. */
+.chk{width:20px;height:20px;accent-color:var(--accent);flex:none}
+/* A line naming one calendar file and its event count. It is a flex row with the remove button at the right. */
+.src{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);padding:2px 0 2px 22px}
+.src span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* The "+ File" and "+ Link" buttons, lined up under the person. */
+.p-actions{display:flex;gap:6px;margin:6px 0 0 22px;flex-wrap:wrap}
+/* SETTINGS FORM. A two-column grid for the settings controls. */
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fields .full{grid-column:1/-1}
+/* A label is stacked above its control. "label.f" means a label element with the class f. */
+label.f{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+/* Shared look for dropdowns, date boxes, link boxes, name boxes and the paste area: full width, rounded,
+   and comfortably tall. A comma separates several selectors that get the same style. */
+select,input[type=date],input[type=url],input[type=text].box,textarea{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+/* The paste box uses a "monospace" font (every letter the same width), which suits calendar text. */
+textarea{min-height:160px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
+/* DAY BUTTONS (Mon to Sun). Each is really a checkbox. The checkbox itself is invisible and stretched
+   over the whole button, so clicking anywhere works, while the span next to it is drawn as the button. */
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days label{position:relative}
+/* The real checkbox: invisible (opacity:0) but still clickable and usable with the keyboard. */
+.days input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+/* How each day button looks when it is not selected. */
+.days span{display:grid;place-items:center;width:44px;height:44px;border-radius:10px;border:1px solid var(--line);font-size:13px;user-select:none}
+/* When the hidden checkbox is ticked, the + selector styles the span right after it: filled green. */
+.days input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.days input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+/* The checkbox options at the bottom of the settings card. */
+.opts{display:grid;gap:8px;margin-top:14px;font-size:14px}
+.opts label{display:flex;gap:10px;align-items:center;min-height:32px}
+.opts input{width:18px;height:18px;accent-color:var(--accent)}
+/* RESULTS. The top of the results card: the headline ("17 times to meet") and the sorting dropdown. */
+.summary{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.summary .big{font:600 26px/1.2 var(--serif)}
+.summary .sub{color:var(--muted);font-size:14px}
+/* A highlighted message bar, used for warnings and tips. */
+.notice{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-size:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+/* The list of suggested meeting times, stacked with gaps between them. */
+.sugs{display:grid;gap:10px;margin-top:14px}
+/* One suggested time: a bordered row with details on the left and buttons on the right. */
+.sug{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;background:transparent;text-align:left;width:100%}
+/* Highlight a suggestion when the mouse is over it, or when it is the selected one (class sel). */
+.sug:hover,.sug.sel{border-color:var(--accent);background:var(--accent-soft)}
+.sug .when{font-weight:600;font-size:16px}
+.sug .meta{color:var(--muted);font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+/* Pips are tiny colored dots, one for each person who is free. */
+.pips{display:inline-flex;gap:3px}
+.pip{width:10px;height:10px;border-radius:50%}
+.sug-actions{display:flex;gap:6px}
+/* On very narrow phones, stack the suggestion's buttons underneath its text. */
+@media (max-width:560px){.sug{grid-template-columns:1fr}}
+/* THE GRID ("heatmap"). A heatmap uses color to show amounts; here, how many people are free.
+   This is the title row above the grid, with the color legend at the right. */
+.heat-head{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;align-items:center;margin-bottom:12px}
+/* The legend explains the colors; the small bar is a gradient from the busy color to the green accent. */
+.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.legend i{display:block;width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--busy),var(--accent))}
+/* The grid sits in a scrollable box (overflow:auto) with a maximum height, so long days scroll
+   instead of making the page huge. */
+.heat-scroll{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:640px}
+/* The grid itself, made with CSS Grid. app.js sets how many columns it has. */
+.heat{display:grid;min-width:max-content;font-size:11px;line-height:12px;position:relative}
+.heat > *{min-width:0}
+/* The day headers (Mon, Tue ...). position:sticky keeps them stuck to the top while you scroll. */
+.hh{position:sticky;top:0;z-index:2;background:var(--panel);text-align:center;padding:6px 2px;font-size:12px;line-height:1.25;border-bottom:1px solid var(--line)}
+.hh b{display:block;font-weight:600}
+.hh span{color:var(--muted)}
+/* The time labels down the left side. They stay in place when you scroll sideways. */
+.tl{height:12px;padding-right:6px;text-align:right;color:var(--muted);overflow:visible;white-space:nowrap;position:sticky;left:0;background:var(--panel);z-index:1}
+/* One small block of the grid (15 minutes). Its color is mixed between "busy" and "accent" according to
+   a variable named --f that app.js sets on each cell: 0 means nobody is free, 1 means everybody is. */
+.cell{height:12px;margin:0 1px;background:color-mix(in srgb,var(--accent) calc(var(--f)*100%),var(--busy));cursor:crosshair}
+/* A thin line at the start of every hour. */
+.cell.hr{border-top:1px solid color-mix(in srgb,var(--panel) 70%,transparent)}
+/* Cells where enough people are free get a faint green outline. */
+.cell.ok{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 60%,transparent)}
+/* When you click a suggestion, its cells get a dark frame. Left and right borders go on every cell,
+   and the top and bottom borders only on the first and last cell, so it looks like one box. */
+.cell.sel{border:0 solid var(--ink);border-left-width:2px;border-right-width:2px}
+.cell.selt{border-top-width:2px}
+.cell.selb{border-bottom-width:2px}
+/* Cells where nobody is free use the plain busy color. */
+.cell.none{background:var(--busy)}
+/* The text box under the grid that tells you who is free or busy at the spot you point at. */
+.readout{margin-top:10px;min-height:44px;font-size:14px;padding:8px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.readout b{font-weight:600}
+/* A person's name with their colored dot, used inside that readout. */
+.who{display:inline-flex;align-items:center;gap:5px;margin-right:10px;white-space:nowrap}
+/* The welcome message shown before any calendar has been added. */
+.empty h3{font:600 28px/1.2 var(--serif);margin:0 0 8px}
+.empty ol{padding-left:20px;margin:12px 0;color:var(--muted)}
+/* The "How do I get a calendar file?" help section. */
+details{margin-top:14px;font-size:14px;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:600;min-height:32px}
+details ul{padding-left:18px;margin:6px 0}
+/* THE POP-UP WINDOW. A dialog is centered by the browser; here we style its box. width:min(...) picks
+   the smaller of 520px and the screen width minus some margin. */
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--ink);padding:20px;width:min(520px,calc(100vw - 32px))}
+/* ::backdrop is the dimmed layer behind a pop-up. The color is black at 45% opacity. */
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin:0 0 14px;font:600 22px/1.2 var(--serif)}
+dialog form{display:grid;gap:12px}
+/* Small text styles for the pop-up: a note in soft gray and an error in red. min-height keeps a bit of
+   space reserved so the layout does not jump when an error appears. */
+.note{font-size:13px;color:var(--muted)}
+.err{color:var(--danger);font-size:13px;min-height:18px}
+/* THE TOAST MESSAGE. #toast matches the element whose id is "toast". It is fixed at the bottom center
+   of the screen (position:fixed) and invisible (opacity:0) until app.js adds the class "show". */
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;max-width:calc(100vw - 32px);z-index:50}
+#toast.show{opacity:1}
+/* A helper class: display:none removes an element from the page. !important means "this wins over any
+   other rule", so JavaScript can reliably hide things by adding this class. */
+.hidden{display:none!important}
+/* ACCESSIBILITY. Some people feel sick from animated movement and turn on a "reduce motion" setting on
+   their device. In that case this rule switches off all transitions. */
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
